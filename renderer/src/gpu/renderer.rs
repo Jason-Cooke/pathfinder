@@ -8,10 +8,10 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use crate::command::{AlphaTileBatchPrimitive, FillBatchPrimitive, PaintData};
+use crate::command::{RenderCommand, SolidTileBatchPrimitive};
 use crate::gpu::debug::DebugUIPresenter;
 use crate::gpu::options::{DestFramebuffer, RendererOptions};
-use crate::gpu_data::{AlphaTileBatchPrimitive, FillBatchPrimitive, PaintData};
-use crate::gpu_data::{RenderCommand, SolidTileBatchPrimitive};
 use crate::post::DefringingKernel;
 use crate::tiles::{TILE_HEIGHT, TILE_WIDTH};
 use pathfinder_geometry::vector::{Vector2I, Vector4F};
@@ -304,17 +304,23 @@ where
 
         // Get stage-1 time.
         let stage_1_time = {
-            let stage_1_timer_query = timers.stage_1.as_ref().unwrap();
-            match self.device.get_timer_query(stage_1_timer_query) {
-                None => return None,
-                Some(query) => query,
+            match timers.stage_1 {
+                None => Duration::default(),
+                Some(ref stage_1_timer_query) => {
+                    match self.device.get_timer_query(stage_1_timer_query) {
+                        None => return None,
+                        Some(query) => query,
+                    }
+                }
             }
         };
 
         // Recycle all timer queries.
         let timers = self.pending_timers.pop_front().unwrap();
         self.free_timer_queries.extend(timers.stage_0.into_iter());
-        self.free_timer_queries.push(timers.stage_1.unwrap());
+        if let Some(timer_query) = timers.stage_1 {
+            self.free_timer_queries.push(timer_query);
+        }
 
         Some(RenderTime { stage_0: total_stage_0_time, stage_1: stage_1_time })
     }

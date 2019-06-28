@@ -8,8 +8,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use crate::builder::SceneBuilder;
-use crate::gpu_data::{AlphaTileBatchPrimitive, BuiltObject, TileObjectPrimitive};
+use crate::builder::{BuiltObject, SceneBuilder};
+use crate::command::{AlphaTileBatchPrimitive, TileObjectPrimitive};
 use crate::paint::{self, PaintId};
 use crate::sorted_vector::SortedVector;
 use pathfinder_geometry::line_segment::LineSegment2F;

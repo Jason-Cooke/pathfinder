@@ -8,31 +8,22 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-//! Packed data ready to be sent to the GPU.
+//! Rendering commands to be interpreted by the GPU.
 
-use crate::options::BoundingQuad;
-use crate::tile_map::DenseTileMap;
+use crate::manager::BoundingQuad;
 use pathfinder_geometry::line_segment::{LineSegmentU4, LineSegmentU8};
 use pathfinder_geometry::vector::Vector2I;
-use pathfinder_geometry::rect::RectF;
 use std::fmt::{Debug, Formatter, Result as DebugResult};
+use std::sync::Arc;
 use std::time::Duration;
-
-#[derive(Debug)]
-pub(crate) struct BuiltObject {
-    pub bounds: RectF,
-    pub fills: Vec<FillBatchPrimitive>,
-    pub alpha_tiles: Vec<AlphaTileBatchPrimitive>,
-    pub tiles: DenseTileMap<TileObjectPrimitive>,
-}
 
 pub enum RenderCommand {
     Start { path_count: usize, bounding_quad: BoundingQuad },
     AddPaintData(PaintData),
     AddFills(Vec<FillBatchPrimitive>),
     FlushFills,
-    AlphaTile(Vec<AlphaTileBatchPrimitive>),
-    SolidTile(Vec<SolidTileBatchPrimitive>),
+    AlphaTile(Arc<Vec<AlphaTileBatchPrimitive>>),
+    SolidTile(Arc<Vec<SolidTileBatchPrimitive>>),
     Finish { build_time: Duration },
 }
 

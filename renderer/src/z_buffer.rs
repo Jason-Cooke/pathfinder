@@ -10,7 +10,7 @@
 
 //! Software occlusion culling.
 
-use crate::gpu_data::SolidTileBatchPrimitive;
+use crate::command::SolidTileBatchPrimitive;
 use crate::paint;
 use crate::scene::PathObject;
 use crate::tile_map::DenseTileMap;
